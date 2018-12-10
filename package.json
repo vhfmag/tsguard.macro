@@ -7,6 +7,11 @@
   "main": "src/macro.js",
   "typings": "./index.d.ts",
   "license": "MIT",
+  "keywords": [
+    "babel-plugin-macros",
+    "typescript",
+    "type-checking"
+  ],
   "dependencies": {
     "@babel/helper-module-imports": "^7.0.0",
     "@babel/types": "^7.2.0",
