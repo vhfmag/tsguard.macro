@@ -15,6 +15,10 @@ const valuesToTest = [
   { name: "Maria", age: 24, isAlive: true },
   { name: "João", isAlive: false },
   { name: "Anônimo" },
+  [],
+  [1],
+  [1, ""],
+  ["", ""],
   Symbol(""),
 ];
 
@@ -103,6 +107,13 @@ describe("simple types", () => {
   );
 
   describe(
+    "array guard",
+    genTests(tg.isArray(tg.isString), (value, expected) => () =>
+      expect(tsguard<string[]>(value)).toBe(expected),
+    ),
+  );
+
+  describe(
     "type literal guard",
     genTests(
       v => v === 1,
@@ -119,7 +130,7 @@ describe("simple types", () => {
     "interface guard",
     genTests(interfaceGuard.get(), (value, expected) => () =>
       expect(
-        tsguard<{ name: string; age: number; isAlive: boolean }>(value),
+        tsguard<{ name: string; age?: number; isAlive: boolean }>(value),
       ).toBe(expected),
     ),
   );

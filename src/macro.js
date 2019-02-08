@@ -1,3 +1,4 @@
+// @ts-ignore
 const { createMacro, MacroError } = require("babel-plugin-macros");
 const parser = require("@babel/parser");
 const t = require("@babel/types");
@@ -35,7 +36,7 @@ function typeToPartialGuard(type, tg) {
   } else if (t.isTSNumberKeyword(type)) {
     return `${tg}.isNumber`;
   } else if (t.isTSObjectKeyword(type)) {
-    return `${tg}.isObjectLike`;
+    return `${tg}.isObject`;
   } else if (t.isTSStringKeyword(type)) {
     return `${tg}.isString`;
   } else if (t.isTSLiteralType(type)) {
@@ -43,18 +44,35 @@ function typeToPartialGuard(type, tg) {
   } else if (t.isTSParenthesizedType(type)) {
     return typeToPartialGuard(type.typeAnnotation, tg);
   } else if (t.isTSArrayType(type)) {
-    return `(v => Array.isArray(v) && v.every(x => ${typeToGuard(
-      type.elementType,
-      "x",
-      tg,
-    )}))`;
+    return `${tg}.isArray(${typeToPartialGuard(type.elementType, tg)})`;
   } else if (t.isTSTypeLiteral(type)) {
-    const propertyGuards = type.members.map(
-      propType =>
-        `.withProperty("${propType.key.name}", ${
-          propType.optional ? "x === undefined ||" : ""
-        } ${typeToPartialGuard(propType.typeAnnotation.typeAnnotation, tg)})`,
-    );
+    const propertyGuards = type.members.map(propType => {
+      if (t.isTSPropertySignature(propType)) {
+        if (t.isIdentifier(propType.key)) {
+          const partialTypeGuard = typeToPartialGuard(
+            propType.typeAnnotation.typeAnnotation,
+            tg,
+          );
+
+          return `.withProperty("${propType.key.name}", ${
+            propType.optional
+              ? `${tg}.isOptional(${partialTypeGuard})`
+              : partialTypeGuard
+          })`;
+        } else if (t.isBinaryExpression(propType.key)) {
+          // { [key in T] }
+          throw Error("Unimplemented");
+        }
+
+        throw Error("Unimplemented");
+      } else if (t.isTSIndexSignature(propType)) {
+        // { [key: string] }
+        throw Error("Unimplemented");
+      }
+
+      // ???
+      throw Error("Unimplemented");
+    });
     return `(new ${tg}.IsInterface()${propertyGuards.join("")}.get())`;
   } else if (t.isTSIntersectionType(type)) {
     return `${tg}.isIntersection(${type.types
