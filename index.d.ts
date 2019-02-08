@@ -1,1 +1,1 @@
-export default function typeGuard<T>(value: any): value is T;
+export default function typeGuard<T>(value: unknown): value is T;
