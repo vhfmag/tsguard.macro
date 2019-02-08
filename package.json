@@ -7,6 +7,9 @@
   "main": "src/macro.js",
   "typings": "./index.d.ts",
   "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "keywords": [
     "babel-plugin-macros",
     "typescript",
