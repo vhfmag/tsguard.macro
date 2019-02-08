@@ -4,7 +4,7 @@ Babel macro that automatically generates type guards for a given type (very much
 
 ## Roadmap
 
-- [ ] Implement tests
+- [x] Implement tests
 - [ ] Support type references (e.g. `typeGuard<IProps>`)
 - [ ] Support tuples
 - [ ] Support mapped types
