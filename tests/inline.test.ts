@@ -134,20 +134,55 @@ describe("simple types", () => {
       ).toBe(expected),
     ),
   );
+
+  describe("union types", () => {
+    describe(
+      "string | number guard",
+      genTests(tg.isUnion(tg.isString, tg.isNumber), (value, expected) => () =>
+        expect(tsguard<string | number>(value)).toBe(expected),
+      ),
+    );
+
+    describe(
+      "null | undefined guard",
+      genTests(tg.isUnion(tg.isNull, tg.isUndefined), (value, expected) => () =>
+        expect(tsguard<null | undefined>(value)).toBe(expected),
+      ),
+    );
+  });
+
+  describe("intersection types", () => {
+    describe(
+      "{ name: string } & { isAlive: boolean } guard",
+      genTests(
+        tg.isIntersection(
+          new tg.IsInterface().withProperty("name", tg.isString).get(),
+          new tg.IsInterface().withProperty("isAlive", tg.isBoolean).get(),
+        ),
+        (value, expected) => () =>
+          expect(tsguard<{ name: string } & { isAlive: boolean }>(value)).toBe(
+            expected,
+          ),
+      ),
+    );
+  });
 });
 
-describe("union types", () => {
+describe("complex types", () => {
   describe(
-    "string | number guard",
-    genTests(tg.isUnion(tg.isString, tg.isNumber), (value, expected) => () =>
-      expect(tsguard<string | number>(value)).toBe(expected),
-    ),
-  );
-
-  describe(
-    "null | undefined guard",
-    genTests(tg.isUnion(tg.isNull, tg.isUndefined), (value, expected) => () =>
-      expect(tsguard<null | undefined>(value)).toBe(expected),
+    "intersection and union guard",
+    genTests(
+      tg.isUnion(
+        tg.isNumber,
+        tg.isIntersection(
+          new tg.IsInterface().withProperty("name", tg.isString).get(),
+          new tg.IsInterface().withProperty("isAlive", tg.isBoolean).get(),
+        ),
+      ),
+      (value, expected) => () =>
+        expect(
+          tsguard<number | ({ name: string } & { isAlive: boolean })>(value),
+        ).toBe(expected),
     ),
   );
 });
