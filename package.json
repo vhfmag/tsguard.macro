@@ -1,6 +1,6 @@
 {
   "name": "tsguard.macro",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Babel macro that automatically generates type guards for a given type (WIP)",
   "author": "Victor Magalhães <victorhfmag+npm@gmail.com>",
   "repository": "https://github.com/vhfmag/tsguard.macro.git",
